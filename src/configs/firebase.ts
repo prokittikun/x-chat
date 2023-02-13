@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
 import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 //env
 // const configValue: string = (process.env.REACT_APP_SOME_CONFIGURATION as string);
 
@@ -19,4 +20,5 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const database = getDatabase(app);
-export { auth, database };
+const fireStore = getFirestore(app);
+export { auth, database, fireStore };

@@ -27,12 +27,12 @@ const SendMessage = ({ scroll }: any) => {
     const messageCollection = collection(roomRef, "messages");
     addDoc(messageCollection, {
       text: message,
-      name: userData?.email,
+      displayName: userData?.displayName,
       avatar: null,
       createdAt: serverTimestamp(),
       uid: uid,
     });
-    // setMessage("");
+    setMessage("");
   };
   return (
     // <div className="w-full py-5 ">

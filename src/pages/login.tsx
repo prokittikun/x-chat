@@ -9,7 +9,7 @@ import { auth } from "./../configs/firebase";
 import useSession from "./../hooks/useSession";
 
 export default function Login() {
-  const email = useRef<HTMLInputElement>(null);
+  const username = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { userData: session, status } = useSession();
@@ -21,24 +21,24 @@ export default function Login() {
   }, [session]);
 
   const login = async () => {
-    if (!email.current || !password.current) return;
-    if (!email.current.value || !password.current.value)
-      return toast.error("email or password can not be empty");
+    if (!username.current || !password.current) return;
+    if (!username.current.value || !password.current.value)
+      return toast.error("username or password can not be empty");
     try {
+      const usernameConcatAtGmail = username.current.value.concat("@gmail.com");
       const respUser = await signInWithEmailAndPassword(
         auth,
-        email.current.value,
+        usernameConcatAtGmail,
         password.current.value
       );
       navigate("/");
-      console.log(respUser.user);
     } catch (error: any) {
       if (error.code === "auth/user-not-found") toast.error("User not found");
       else if (
         error.code === "auth/wrong-password" ||
         error.code === "auth/invalid-email"
       ) {
-        toast.error("email or password is invalid");
+        toast.error("username or password is invalid");
       }
       console.log(error);
     }
@@ -57,7 +57,7 @@ export default function Login() {
             label="Username"
             variant="outlined"
             autoComplete="off"
-            inputRef={email}
+            inputRef={username}
           />
           <TextField
             sx={{ width: "100%" }}

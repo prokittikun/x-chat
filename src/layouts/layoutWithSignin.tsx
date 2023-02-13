@@ -15,9 +15,4 @@ export default function LayoutWithSignIn(props: Props) {
   }, [status]);
 
   return <>{status === "auth" ? props.children : <Loading />}</>;
-  // return status === "loading" ? (
-  //   <Loading />
-  // ) : status === "auth" ? (
-  //   props.children
-  // ) : "";
 }

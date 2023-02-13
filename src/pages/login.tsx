@@ -2,17 +2,16 @@ import LoginIcon from "@mui/icons-material/Login";
 import { TextField } from "@mui/material";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useEffect, useRef } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import Loading from "./../components/loading";
 import { auth } from "./../configs/firebase";
 import useSession from "./../hooks/useSession";
-import Toast from "./../components/toast";
 
 export default function Login() {
   const email = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-  const toast = (msg: string) => Toast(msg);
   const { userData: session, status } = useSession();
   useEffect(() => {
     if (session) {
@@ -23,6 +22,8 @@ export default function Login() {
 
   const login = async () => {
     if (!email.current || !password.current) return;
+    if (!email.current.value || !password.current.value)
+      return toast.error("email or password can not be empty");
     try {
       const respUser = await signInWithEmailAndPassword(
         auth,
@@ -32,7 +33,14 @@ export default function Login() {
       navigate("/");
       console.log(respUser.user);
     } catch (error: any) {
-      console.log(error.code, error.message);
+      if (error.code === "auth/user-not-found") toast.error("User not found");
+      else if (
+        error.code === "auth/wrong-password" ||
+        error.code === "auth/invalid-email"
+      ) {
+        toast.error("email or password is invalid");
+      }
+      console.log(error);
     }
   };
 

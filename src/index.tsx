@@ -1,14 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { Toaster } from "react-hot-toast";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Loading from "./components/loading";
 import "./index.css";
+import LayoutWithSignIn from "./layouts/layoutWithSignin";
+import Index from "./pages/index";
 import Login from "./pages/login";
 import Register from "./pages/register";
 import reportWebVitals from "./reportWebVitals";
-import Index from "./pages/index";
-import LayoutWithSignIn from "./layouts/layoutWithSignin";
-import { Toaster } from "react-hot-toast";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement

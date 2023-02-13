@@ -31,7 +31,7 @@ export default function Navbar() {
             className="input input-bordered"
           /> 
         </div> */}
-        <div className="text-2x">{userData?.email}</div>
+        <div className="text-2x">{userData?.displayName}</div>
         <div className="dropdown dropdown-end">
           <div tabIndex={0} className="avatar cursor-pointer">
             <AccountCircleIcon sx={{ fontSize: 50 }} />

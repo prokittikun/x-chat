@@ -8,10 +8,10 @@ export default function Index() {
   const scroll = useRef<HTMLSpanElement>(null);
   return (
     <>
-      <div className="flex flex-col h-screen items-center">
+      <div className="flex flex-col h-screen items-center overflow-hidden">
         <Navbar />
         <JoinRoom>
-          <div className="bg-base-200 flex flex-col h-full rounded-xl max-w-[50rem] w-full my-3 mt-3 px-5 gap-5 py-3">
+          <div className="bg-base-200 flex flex-col h-full max-h-[75vh] rounded-xl max-w-[50rem] w-full my-3 mt-3 px-5 gap-5 py-3">
             <ChatBox />
             <SendMessage scroll={scroll} />
           </div>

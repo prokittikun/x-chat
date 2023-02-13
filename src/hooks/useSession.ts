@@ -1,7 +1,6 @@
-import { auth } from "./../configs/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
-import React, { useState } from "react";
-import { useEffect, useCallback } from "react";
+import { useEffect, useState } from "react";
+import { auth } from "./../configs/firebase";
 
 export default function useSession() {
   const [userData, setUserData] = useState<User | null>(null);

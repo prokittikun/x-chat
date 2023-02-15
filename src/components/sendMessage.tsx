@@ -1,14 +1,9 @@
+import { addDoc, collection, doc, serverTimestamp } from "firebase/firestore";
+import moment from "moment";
 import React, { useState } from "react";
-import { auth, fireStore } from "../configs/firebase";
-import {
-  addDoc,
-  collection,
-  doc,
-  serverTimestamp,
-  setDoc,
-} from "firebase/firestore";
-import useSession from "../hooks/useSession";
 import toast from "react-hot-toast";
+import { fireStore } from "../configs/firebase";
+import useSession from "../hooks/useSession";
 
 const SendMessage = ({ scroll }: any) => {
   //{ scroll }
@@ -25,11 +20,13 @@ const SendMessage = ({ scroll }: any) => {
     const roomCollection = collection(fireStore, "rooms");
     const roomRef = doc(roomCollection, "X-C999");
     const messageCollection = collection(roomRef, "messages");
+
     addDoc(messageCollection, {
       text: message,
       displayName: userData?.displayName,
       avatar: null,
       createdAt: serverTimestamp(),
+      displayDate: moment().format("DD/MM/YYYY HH:mm"),
       uid: uid,
     });
     setMessage("");

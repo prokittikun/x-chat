@@ -85,7 +85,7 @@ export default function Login() {
             <LoginIcon />
           </button>
           <div className="text-base-content mx-auto">
-            <Link to={`/register`}>Don't have an account yet ?</Link>
+            <Link to={`/register`}>Don't have a X-Chat account yet ? <strong>Sign up</strong></Link>
           </div>
         </div>
       </div>

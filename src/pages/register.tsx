@@ -83,7 +83,7 @@ export default function Register() {
           <AppRegistrationIcon />
         </button>
         <div className="text-base-content mx-auto">
-          <Link to={`/signIn`}>Already have an account ?</Link>
+          <Link to={`/signIn`}>Already have an account ? <strong>Sign in</strong></Link>
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@ export interface MessageInterface {
   uid: string;
   avatar: any;
   createdAt: MessageCreatedAt;
+  displayDate: string;
   text: string;
   id: string;
 }

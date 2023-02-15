@@ -1,34 +1,27 @@
-import {
-  collection,
-  doc,
-  getDocs,
-  setDoc,
-  where,
-  query,
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useState } from "react";
-import { fireStore } from "../configs/firebase";
 import { toast } from "react-hot-toast";
+import { fireStore } from "../configs/firebase";
+import Loading from "./loading";
 interface Props {
   children: React.ReactNode;
 }
 export default function JoinRoom(props: Props) {
-  const [haveRoom, setHaveRoom] = useState(false);
+  const [findRoomStatus, setFindRoomStatus] = useState<
+    "notFound" | "loading" | "found"
+  >("notFound");
   const [roomId, setRoomId] = useState("");
   const roomsRef = collection(fireStore, "rooms");
   const findRoom = async () => {
+    setFindRoomStatus("loading");
     const q = query(roomsRef, where("roomId", "==", roomId));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.size === 0) {
+      setFindRoomStatus("notFound");
       toast.error("Room not found");
       return;
-    } else {
-      console.log(querySnapshot);
-      setHaveRoom(true);
-      // querySnapshot.forEach((doc) => {
-      //   return;
-      // });
     }
+    setFindRoomStatus("found");
   };
   return (
     <>
@@ -44,7 +37,11 @@ export default function JoinRoom(props: Props) {
           Join room
         </button>
       </div>
-      {haveRoom ? props.children : null}
+      {findRoomStatus === "loading" ? (
+        <Loading />
+      ) : findRoomStatus === "found" ? (
+        props.children
+      ) : null}
     </>
   );
 }

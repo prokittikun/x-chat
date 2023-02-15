@@ -51,21 +51,35 @@ export default function Login() {
       <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center">
         <div className="max-w-[30rem] w-full px-5 flex flex-col gap-5">
           <h1 className="text-3xl font-bold text-left base-content">LOGIN</h1>
-          <TextField
+          {/* <TextField
             sx={{ width: "100%" }}
             id="outlined-basic"
             label="Username"
             variant="outlined"
             autoComplete="off"
             inputRef={username}
-          />
-          <TextField
-            sx={{ width: "100%" }}
+          /> */}
+          {/* <TextField
+            sx={{ width: "100%", backgroundColor: "white" }}
             id="outlined-basic"
             label="Password"
             variant="outlined"
             autoComplete="off"
             inputRef={password}
+          /> */}
+          <input
+            type="username"
+            ref={username}
+            placeholder="Username"
+            autoComplete="false"
+            className="input bg-slate-700"
+          />
+          <input
+            type="password"
+            ref={password}
+            placeholder="Password"
+            autoComplete="false"
+            className="input bg-slate-700"
           />
           <button className="btn btn-secondary text-white" onClick={login}>
             <LoginIcon />

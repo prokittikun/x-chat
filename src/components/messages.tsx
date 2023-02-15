@@ -1,11 +1,25 @@
-import React from "react";
-import { auth } from "../configs/firebase";
+import moment from "moment";
 import useSession from "../hooks/useSession";
 import { MessageInterface } from "./../interfaces/message";
-import * as moment from "moment";
 
 const Message = (message: MessageInterface) => {
   const { userData: session } = useSession();
+
+  const ShowDate = (props: {}) => {
+    if (!message.displayDate) return <></>;
+    const date = message.displayDate.split(" ");
+    const today = date[0] === moment().format("DD/MM/YYYY");
+    return (
+      <div
+        className={`flex ${
+          message.uid === session?.uid ? "justify-end" : "justify-start"
+        }   `}
+      >
+        {today ? `today ${date[1]}` : message.displayDate}
+      </div>
+    );
+  };
+
   return (
     <>
       <div
@@ -32,6 +46,11 @@ const Message = (message: MessageInterface) => {
             </p>
           </div>
         </div>
+      </div>
+      <div className="">
+        <span className="text-[15px]">
+          <ShowDate />
+        </span>
       </div>
     </>
   );

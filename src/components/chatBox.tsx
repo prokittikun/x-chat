@@ -17,6 +17,7 @@ export default function ChatBox() {
   const { userData: session } = useSession();
   let scrollIntoView = useRef<boolean>(true);
   const scroll = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const roomCollection = collection(fireStore, "rooms");
     const roomRef = doc(roomCollection, "X-C999");
@@ -26,19 +27,23 @@ export default function ChatBox() {
       const message2: MessageInterface[] = [];
       doc.forEach((x: any) => {
         // console.log(x.data());
-        
+
         message2.push({ ...x.data(), id: x.id });
       });
-      console.log(scrollIntoView.current); // TODO
-      if (scrollIntoView.current) { // && session && message2[message2.length - 1].uid !== session?.uid
-        scroll.current?.scrollIntoView({ behavior: "smooth" });
-      }
-      // console.log(message2[message2.length - 1].uid, session?.uid);
-      
       setMessages(message2);
     });
   }, []);
-
+  useEffect(() => {
+    if (messages.length === 0) return;
+    if (!session) return;
+    const lastMessage = messages[messages.length - 1];
+    const userUID = session?.uid;
+    if (scrollIntoView.current) {
+      scroll.current?.scrollIntoView();
+    } else if (lastMessage.uid === userUID) {
+      scroll.current?.scrollIntoView();
+    }
+  }, [messages]);
   return (
     <>
       <div
@@ -48,7 +53,6 @@ export default function ChatBox() {
             Math.ceil(e.target.scrollTop) >=
             e.target.scrollHeight - e.target.offsetHeight;
           // console.log(scrollIntoView.current);
-          
         }}
       >
         <div className="rounded-xl w-full px-1 flex flex-col gap-1">

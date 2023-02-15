@@ -25,9 +25,7 @@ export default function ChatBox() {
     const q = query(messageCollection, orderBy("createdAt", "asc"));
     onSnapshot(q, (doc: any) => {
       const message2: MessageInterface[] = [];
-      doc.forEach((x: any) => {
-        // console.log(x.data());
-
+      doc.forEach(async (x: any) => {
         message2.push({ ...x.data(), id: x.id });
       });
       setMessages(message2);

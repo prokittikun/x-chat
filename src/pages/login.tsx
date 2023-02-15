@@ -3,7 +3,7 @@ import { TextField } from "@mui/material";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Loading from "./../components/loading";
 import { auth } from "./../configs/firebase";
 import useSession from "./../hooks/useSession";
@@ -70,6 +70,9 @@ export default function Login() {
           <button className="btn btn-secondary text-white" onClick={login}>
             <LoginIcon />
           </button>
+          <div className="text-base-content mx-auto">
+            <Link to={`/register`}>Don't have an account yet ?</Link>
+          </div>
         </div>
       </div>
     </>

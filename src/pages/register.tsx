@@ -1,8 +1,12 @@
-import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
+import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import { TextField } from "@mui/material";
-import { createUserWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signOut,
+  updateProfile,
+} from "firebase/auth";
 import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Loading from "./../components/loading";
 import { auth } from "./../configs/firebase";
 import useSession from "./../hooks/useSession";
@@ -22,7 +26,7 @@ export default function Register() {
   const register = async () => {
     if (!username.current || !password.current) return;
     try {
-      const usernameConcatAtGmail = username.current.value.concat("@gmail.com") ;
+      const usernameConcatAtGmail = username.current.value.concat("@gmail.com");
       const respCreatedUser = await createUserWithEmailAndPassword(
         auth,
         usernameConcatAtGmail,
@@ -30,7 +34,7 @@ export default function Register() {
       );
       updateProfile(respCreatedUser.user, {
         displayName: username.current.value,
-      })
+      });
       signOut(auth);
       navigate("/signin");
       console.log(respCreatedUser.user);
@@ -64,6 +68,9 @@ export default function Register() {
         <button className="btn btn-secondary text-white" onClick={register}>
           <AppRegistrationIcon />
         </button>
+        <div className="text-base-content mx-auto">
+          <Link to={`/signIn`}>Already have an account ?</Link>
+        </div>
       </div>
     </div>
   ) : (

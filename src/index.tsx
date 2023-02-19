@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { Toaster } from "react-hot-toast";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { RecoilRoot } from "recoil";
 import "./index.css";
 import LayoutWithSignIn from "./layouts/layoutWithSignin";
 import Index from "./pages/index";
@@ -33,24 +34,26 @@ const router = createBrowserRouter([
 
 root.render(
   <React.StrictMode>
-    <Toaster
-      position="top-right"
-      reverseOrder={false}
-      gutter={8}
-      containerClassName=""
-      containerStyle={{}}
-      toastOptions={{
-        // Define default options
-        className: "",
-        duration: 4000,
-        style: {
-          background: "#363636",
-          color: "#fff",
-        },
-      }}
-    />
-    <RouterProvider router={router} />
-    {/* </Toaster> */}
+    <RecoilRoot>
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+        gutter={8}
+        containerClassName=""
+        containerStyle={{}}
+        toastOptions={{
+          // Define default options
+          className: "",
+          duration: 4000,
+          style: {
+            background: "#363636",
+            color: "#fff",
+          },
+        }}
+      />
+      <RouterProvider router={router} />
+      {/* </Toaster> */}
+    </RecoilRoot>
   </React.StrictMode>
 );
 

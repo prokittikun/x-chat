@@ -7,7 +7,7 @@ import {
 } from "firebase/auth";
 import { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Loading from "./../components/loading";
+import {Loading} from "./../components/loading";
 import { auth } from "./../configs/firebase";
 import useSession from "./../hooks/useSession";
 

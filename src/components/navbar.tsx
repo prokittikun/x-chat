@@ -12,7 +12,7 @@ export default function Navbar() {
     navigate("/signin");
   };
   return (
-    <div className="navbar bg-base-100 drop-shadow-md">
+    <div className="navbar bg-base-800 drop-shadow-md ">
       <div className="flex-1">
         <button
           onClick={() => {

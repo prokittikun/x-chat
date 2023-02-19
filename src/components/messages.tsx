@@ -43,7 +43,7 @@ const Message = (message: MessageInterface) => {
             >
               {message.displayName}
             </p>
-          ) : <div className="px-1 py-3"></div>}
+          ) : <div className="px-1 py-3 "></div>}
           <div className="block p-2 bg-base-content  rounded-lg">
             <p className="text-base-100 flex break-all justify-center">
               {message.text}

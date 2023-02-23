@@ -13,6 +13,7 @@ import {
   collection,
   getDocs,
   onSnapshot,
+  orderBy,
   query,
   where,
 } from "firebase/firestore";
@@ -34,7 +35,7 @@ export default function Index() {
         setFindRoomCreatedStatus("loading");
       }
       const roomsRef = collection(fireStore, "rooms");
-      const q = query(roomsRef, where("host", "==", userData?.uid));
+      const q = query(roomsRef, where("host", "==", userData?.uid), orderBy("createdAt", "asc"));
       const querySnapshot = await getDocs(q);
       if (querySnapshot.size === 0) {
         setFindRoomCreatedStatus("notFound");

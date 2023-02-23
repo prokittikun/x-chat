@@ -16,7 +16,7 @@ const SendMessage = ({ scroll }: any) => {
   const sendMessage = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (message.trim() === "") {
-      toast.error("Message cannot be empty");
+      toast.error("Message can't be empty");
       return;
     }
     const uid = userData?.uid;

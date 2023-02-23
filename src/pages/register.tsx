@@ -7,9 +7,10 @@ import {
 } from "firebase/auth";
 import { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {Loading} from "./../components/loading";
+import { Loading } from "./../components/loading";
 import { auth } from "./../configs/firebase";
 import useSession from "./../hooks/useSession";
+import { toast } from 'react-hot-toast';
 
 export default function Register() {
   const username = useRef<HTMLInputElement>(null);
@@ -23,8 +24,12 @@ export default function Register() {
     }
   }, [session]);
 
-  const register = async () => {
-    if (!username.current || !password.current) return;
+  const register = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!username.current || !password.current) {
+      toast.error("username or password can't be empty");
+      return
+    };
     try {
       const usernameConcatAtGmail = username.current.value.concat("@gmail.com");
       const respCreatedUser = await createUserWithEmailAndPassword(
@@ -46,25 +51,12 @@ export default function Register() {
   return status === "loading" ? (
     <Loading />
   ) : status === "unauth" ? (
-    <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center">
+    <form
+      className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center"
+      onSubmit={(event) => register(event)}
+    >
       <div className="max-w-[30rem] w-full px-5 flex flex-col gap-5">
         <h1 className="text-3xl font-bold text-left base-content">REGISTER</h1>
-        {/* <TextField
-          sx={{ width: "100%" }}
-          id="outlined-basic"
-          label="Username"
-          variant="outlined"
-          autoComplete="off"
-          inputRef={username}
-        />
-        <TextField
-          sx={{ width: "100%" }}
-          id="outlined-basic"
-          label="Password"
-          variant="outlined"
-          autoComplete="off"
-          inputRef={password}
-        /> */}
         <input
           type="username"
           ref={username}
@@ -79,14 +71,16 @@ export default function Register() {
           autoComplete="false"
           className="input bg-slate-700"
         />
-        <button className="btn btn-secondary text-white" onClick={register}>
+        <button className="btn btn-secondary text-white">
           <AppRegistrationIcon />
         </button>
         <div className="text-base-content mx-auto">
-          <Link to={`/signIn`}>Already have an account ? <strong>Sign in</strong></Link>
+          <Link to={`/signIn`}>
+            Already have an account ? <strong>Sign in</strong>
+          </Link>
         </div>
       </div>
-    </div>
+    </form>
   ) : (
     <></>
   );

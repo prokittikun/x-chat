@@ -1,6 +1,6 @@
-import { addDoc, collection, doc, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, serverTimestamp } from "firebase/firestore";
 import moment from "moment";
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { fireStore } from "../configs/firebase";
 import RoomIdContext from "../stores/roomIdContext";
@@ -22,6 +22,11 @@ const SendMessage = ({ scroll }: any) => {
     const uid = userData?.uid;
     const roomCollection = collection(fireStore, "rooms");
     const roomRef = doc(roomCollection, roomIdStore.roomId);
+    const docRoomRef = await getDoc(roomRef);
+    if(!docRoomRef.exists()){
+      toast.error("The room could not be found or it may have been deleted.");
+      return;
+    }
     const messageCollection = collection(roomRef, "messages");
 
     addDoc(messageCollection, {
@@ -35,6 +40,9 @@ const SendMessage = ({ scroll }: any) => {
     });
     setMessage("");
   };
+  useEffect(() => {
+    setMessage("");
+  }, [roomIdStore])
   
   return (
     // <div className="w-full py-5 ">

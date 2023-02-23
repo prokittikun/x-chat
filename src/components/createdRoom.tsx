@@ -12,7 +12,7 @@ interface Props {
 export default function CreatedRoom(props: Props) {
   const [havePassword, setHavePassword] = useState(false);
   const [roomId, setRoomId] = useState("");
-  const [roomPassword, setRoomPassword] = useState<string | null>(null);
+  const [roomPassword, setRoomPassword] = useState<string>("");
   const [roomName, setRoomName] = useState("");
   const { userData } = useSession();
 
@@ -27,6 +27,7 @@ export default function CreatedRoom(props: Props) {
     }
     const stringGenerate = generateString();
     setRoomId("X-C" + stringGenerate);
+    toast.success("Created room successfully");
   };
   useMemo(async () => {
     const roomCollection = collection(fireStore, "rooms");
@@ -40,6 +41,8 @@ export default function CreatedRoom(props: Props) {
         displayDate: moment().format("DD/MM/YYYY HH:mm"),
       });
       props.onCreatedRoom();
+      setRoomName("");
+      setRoomPassword("");
     }
   }, [roomId]);
 
@@ -52,6 +55,7 @@ export default function CreatedRoom(props: Props) {
       >
         <input
           placeholder="Room name"
+          value={roomName}
           onChange={(e) => setRoomName(e.target.value)}
           className="input w-full border-1 border-base-content focus:outline-none"
           type="text"
@@ -59,7 +63,8 @@ export default function CreatedRoom(props: Props) {
         {havePassword ? (
           <input
             placeholder="Password"
-            onChange={(e) => setRoomPassword(e.target.value)}
+            value={roomPassword}
+            onChange={(e) => setRoomPassword(e.target.value.trim())}
             className="input w-full border-1 border-base-content focus:outline-none"
             type="password"
           />
@@ -69,7 +74,7 @@ export default function CreatedRoom(props: Props) {
             type="checkbox"
             className="checkbox checkbox-warning"
             onChange={() => {
-              setRoomPassword(null);
+              setRoomPassword("");
               setHavePassword(!havePassword);
             }}
           />

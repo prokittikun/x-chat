@@ -4,7 +4,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
-import {Loading} from "./../components/loading";
+import { Loading } from "./../components/loading";
 import { auth } from "./../configs/firebase";
 import useSession from "./../hooks/useSession";
 
@@ -20,10 +20,11 @@ export default function Login() {
     }
   }, [session]);
 
-  const login = async () => {
+  const login = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     if (!username.current || !password.current) return;
     if (!username.current.value || !password.current.value)
-      return toast.error("username or password can not be empty");
+      return toast.error("username or password can't be empty");
     try {
       const usernameConcatAtGmail = username.current.value.concat("@gmail.com");
       const respUser = await signInWithEmailAndPassword(
@@ -48,7 +49,8 @@ export default function Login() {
     <Loading />
   ) : status === "unauth" ? (
     <>
-      <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center">
+      <form className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center"
+      onSubmit={(event) => login(event)}>
         <div className="max-w-[30rem] w-full px-5 flex flex-col gap-5">
           <h1 className="text-3xl font-bold text-left base-content">LOGIN</h1>
           {/* <TextField
@@ -81,14 +83,16 @@ export default function Login() {
             autoComplete="false"
             className="input bg-slate-700"
           />
-          <button className="btn btn-secondary text-white" onClick={login}>
+          <button className="btn btn-secondary text-white">
             <LoginIcon />
           </button>
           <div className="text-base-content mx-auto">
-            <Link to={`/register`}>Don't have a X-Chat account yet ? <strong>Sign up</strong></Link>
+            <Link to={`/register`}>
+              Don't have a X-Chat account yet ? <strong>Sign up</strong>
+            </Link>
           </div>
         </div>
-      </div>
+      </form>
     </>
   ) : (
     <></>

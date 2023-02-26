@@ -1,14 +1,16 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
-import React, { createContext, useMemo, useState } from "react";
+import React, { createContext, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useRecoilState } from "recoil";
 import { fireStore } from "../configs/firebase";
 import RoomIdContext from "../stores/roomIdContext";
 import KeyIcon from "@mui/icons-material/Key";
 import { Loading } from "./loading";
-import { roomIdAtom } from "../stores/roomIdStore";
+import { roomDataAtom } from "../stores/roomDataStore";
 import { Box, Modal, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { useOnClickOutside } from "usehooks-ts";
+
 interface Props {
   children: React.ReactNode;
 }
@@ -22,7 +24,11 @@ const style = {
   p: 4,
 };
 export default function JoinRoom(props: Props) {
-  const [roomIdStore, setRoomIdStore] = useRecoilState(roomIdAtom);
+  const [roomDataStore, setRoomDataStore] = useRecoilState(roomDataAtom);
+  const [roomData, setRoomData] = useState<{roomId: string, roomName: string}>({
+    roomId: "",
+    roomName: "",
+  });
   const [roomPassword, setRoomPassword] = useState("");
   const [password, setPassword] = useState("");
   const [findRoomStatus, setFindRoomStatus] = useState<
@@ -31,6 +37,8 @@ export default function JoinRoom(props: Props) {
   const [roomId, setRoomId] = useState("X-C");
   const roomsRef = collection(fireStore, "rooms");
   const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
   const handleClose = () => {
     setPassword("");
     setRoomPassword("");
@@ -46,7 +54,7 @@ export default function JoinRoom(props: Props) {
     if (password === roomPassword) {
       setRoomPassword("");
       setPassword("");
-      setRoomIdStore({ roomId });
+      setRoomDataStore({ roomId: roomData.roomId, roomName: roomData.roomName });
       setFindRoomStatus("found");
     } else {
       toast.error("Incorrect Password");
@@ -66,9 +74,10 @@ export default function JoinRoom(props: Props) {
       toast.error("Room not found");
       return;
     }
+    setRoomData({ roomId: querySnapshot.docs[0].data().roomId, roomName: querySnapshot.docs[0].data().roomName });
     if (!querySnapshot.docs[0].data().password) {
       setRoomPassword(querySnapshot.docs[0].data().password);
-      setRoomIdStore({ roomId });
+      setRoomDataStore({ roomId: roomData.roomId, roomName: roomData.roomName });
       setFindRoomStatus("found");
     } else {
       setRoomPassword(querySnapshot.docs[0].data().password);
@@ -76,12 +85,17 @@ export default function JoinRoom(props: Props) {
       setFindRoomStatus("enterPassword");
     }
   };
+  const handleClickOutside = () => {
+    handleClose();
+  };
+  useOnClickOutside(ref, handleClickOutside);
+
   useMemo(() => {
-    if (roomIdStore.roomId) {
-      setRoomId(roomIdStore.roomId);
+    if (roomDataStore.roomId) {
+      setRoomId(roomDataStore.roomId);
       setFindRoomStatus("found");
     }
-  }, [roomIdStore]);
+  }, [roomDataStore]);
 
   return (
     <>
@@ -103,16 +117,12 @@ export default function JoinRoom(props: Props) {
         <Loading />
       ) : findRoomStatus === "enterPassword" ? (
         <>
-          <Modal
-            keepMounted
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="keep-mounted-modal-title"
-            aria-describedby="keep-mounted-modal-description"
-          >
-            <Box sx={style}>
+          <>
+            <div className="absolute top-0 left-0 bottom-0 right-0 bg-base-300/40 z-0 flex justify-center items-center">
               <form
-                className="absolute top-0 bottom-0 left-0 right-0 "
+                ref={ref}
+                // onClick={() => console.log("clicked")}
+                className="w-[50%]"
                 onSubmit={(e) => checkPassword(e)}
               >
                 <div className="flex justify-center items-center h-full w-full">
@@ -124,50 +134,27 @@ export default function JoinRoom(props: Props) {
                       placeholder="Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value.trim())}
-                      className="input text-base-content w-[50%] border-1 border-base-content focus:outline-none"
+                      className="input text-base-content w-[80%] border-1 border-base-content focus:outline-none"
                       type="password"
                     />
                     {/* cancel */}
                     <div className="flex gap-2">
-                      <button type="button" className="btn btn-base-300 btn-sm" onClick={()=>handleClose()}>
-                        <CloseIcon />
-                      </button>
                       <button type="submit" className="btn btn-base-300 btn-sm">
                         <KeyIcon />
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-base-300 btn-sm"
+                        onClick={() => handleClose()}
+                      >
+                        <CloseIcon />
                       </button>
                     </div>
                   </div>
                 </div>
               </form>
-            </Box>
-          </Modal>
-          {/* <div 
-            className="absolute top-0 bottom-0 left-0 right-0 backdrop-blur-[1px] bg-base-300/40 z-5"
-            open={open}
-            onClose={handleClose}
-          ></div>
-          <form
-            className="absolute top-0 bottom-0 left-0 right-0 "
-            onSubmit={(e) => checkPassword(e)}
-          >
-            <div className="flex justify-center items-center h-full z-1">
-              <div className="flex flex-col gap-5 rounded-lg shadow-md shadow-base-content/60 justify-center items-center bg-base-content text-base-300 max-w-[30rem] w-full px-5 py-5 m-2">
-                <h1 className="text-2xl font-bold base-content">
-                  Enter password
-                </h1>
-                <input
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value.trim())}
-                  className="input text-base-content w-[50%] border-1 border-base-content focus:outline-none"
-                  type="password"
-                />
-                <button type="submit" className="btn btn-base-300 btn-sm">
-                  <KeyIcon />
-                </button>
-              </div>
             </div>
-          </form> */}
+          </>
         </>
       ) : findRoomStatus === "found" ? (
         // <RoomIdContext.Provider value={{ roomId }}>

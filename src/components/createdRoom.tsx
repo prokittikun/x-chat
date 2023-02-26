@@ -39,6 +39,7 @@ export default function CreatedRoom(props: Props) {
         password: roomPassword,
         createdAt: serverTimestamp(),
         displayDate: moment().format("DD/MM/YYYY HH:mm"),
+        isDevelop: false,
       });
       props.onCreatedRoom();
       setRoomName("");

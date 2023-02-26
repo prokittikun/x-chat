@@ -11,12 +11,12 @@ import { fireStore } from "../configs/firebase";
 import "../css/chatBox.css";
 import useSession from "../hooks/useSession";
 import { MessageInterface } from "../interfaces/message";
-import { roomIdAtom } from "../stores/roomIdStore";
+import { roomDataAtom } from "../stores/roomDataStore";
 import Message from "./messages";
 
 export default function ChatBox() {
-  const [roomIdStore, setRoomIdStore] = useRecoilState(roomIdAtom);
-  const roomId = roomIdStore.roomId;
+  const [roomDataStore, setRoomDataStore] = useRecoilState(roomDataAtom);
+  const roomId = roomDataStore.roomId;
   const [messages, setMessages] = useState<MessageInterface[]>([]);
   const { userData: session } = useSession();
   let scrollIntoView = useRef<boolean>(true);
@@ -56,7 +56,7 @@ export default function ChatBox() {
   return (
     <>
       <div
-        className="flex h-screen overflow-auto chat-scroll"
+        className="flex h-screen overflow-auto chat-scroll "
         onScroll={(e: any) => {
           scrollIntoView.current =
             Math.ceil(e.target.scrollTop) >=

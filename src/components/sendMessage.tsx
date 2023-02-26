@@ -1,54 +1,62 @@
-import { addDoc, collection, doc, getDoc, serverTimestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 import moment from "moment";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { fireStore } from "../configs/firebase";
-import RoomIdContext from "../stores/roomIdContext";
-import useSession from "../hooks/useSession";
 import { useRecoilState } from "recoil";
-import { roomIdAtom } from "../stores/roomIdStore";
+import { fireStore } from "../configs/firebase";
+import useSession from "../hooks/useSession";
+import { roomDataAtom } from "../stores/roomDataStore";
+import { debounce } from "lodash";
 
-const SendMessage = ({ scroll }: any) => {
-  const [roomIdStore, setRoomIdStore] = useRecoilState(roomIdAtom);
-  const [roomId, setRoomId] = useState<string>("");
+const SendMessage = () => {
+  const [roomDataStore, setRoomDataStore] = useRecoilState(roomDataAtom);
+  // const [sendStatus, setSendStatus] = useState<"sending" | "sent">("sent");
   const [message, setMessage] = useState("");
   const { userData } = useSession();
-  const sendMessage = async (event: React.FormEvent<HTMLFormElement>) => {
+  const sendMessageData = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (message.trim() === "") {
       toast.error("Message can't be empty");
       return;
     }
     const uid = userData?.uid;
+    const tempMessage = message;
+    setMessage("");
     const roomCollection = collection(fireStore, "rooms");
-    const roomRef = doc(roomCollection, roomIdStore.roomId);
+    const roomRef = doc(roomCollection, roomDataStore.roomId);
     const docRoomRef = await getDoc(roomRef);
-    if(!docRoomRef.exists()){
+    if (!docRoomRef.exists()) {
       toast.error("The room could not be found or it may have been deleted.");
       return;
     }
     const messageCollection = collection(roomRef, "messages");
-
-    addDoc(messageCollection, {
-      text: message,
+    
+    await addDoc(messageCollection, {
+      text: tempMessage,
       displayName: userData?.displayName,
       avatar: null,
       createdAt: serverTimestamp(),
       displayDate: moment().format("DD/MM/YYYY HH:mm"),
       uid: uid,
-      roomId: roomIdStore.roomId,
     });
-    setMessage("");
   };
   useEffect(() => {
     setMessage("");
-  }, [roomIdStore])
-  
+  }, [roomDataStore]);
+
   return (
     // <div className="w-full py-5 ">
     <>
       <form
-        onSubmit={(event) => sendMessage(event)}
+        onSubmit={(event) => {
+          sendMessageData(event);
+        }}
         className="py-5 flex gap-5"
       >
         <label htmlFor="messageInput" hidden>

@@ -1,33 +1,23 @@
+import CloseIcon from "@mui/icons-material/Close";
+import KeyIcon from "@mui/icons-material/Key";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import React, { createContext, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useRecoilState } from "recoil";
-import { fireStore } from "../configs/firebase";
-import RoomIdContext from "../stores/roomIdContext";
-import KeyIcon from "@mui/icons-material/Key";
-import { Loading } from "./loading";
-import { roomDataAtom } from "../stores/roomDataStore";
-import { Box, Modal, Typography } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import { useOnClickOutside } from "usehooks-ts";
+import { fireStore } from "../configs/firebase";
+import { roomDataAtom } from "../stores/roomDataStore";
+import { Loading } from "./loading";
 
 interface Props {
   children: React.ReactNode;
 }
-const style = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "40%",
-  boxShadow: 24,
-  p: 4,
-};
 export default function JoinRoom(props: Props) {
   const [roomDataStore, setRoomDataStore] = useRecoilState(roomDataAtom);
-  const [roomData, setRoomData] = useState<{roomId: string, roomName: string}>({
+  const [roomData, setRoomData] = useState<{roomId: string, roomName: string, isDevelop: boolean}>({
     roomId: "",
     roomName: "",
+    isDevelop: false,
   });
   const [roomPassword, setRoomPassword] = useState("");
   const [password, setPassword] = useState("");
@@ -52,9 +42,9 @@ export default function JoinRoom(props: Props) {
       return;
     }
     if (password === roomPassword) {
+      setRoomDataStore({ roomId: roomData.roomId, roomName: roomData.roomName, isDevelop: roomData.isDevelop });
       setRoomPassword("");
       setPassword("");
-      setRoomDataStore({ roomId: roomData.roomId, roomName: roomData.roomName });
       setFindRoomStatus("found");
     } else {
       toast.error("Incorrect Password");
@@ -74,10 +64,10 @@ export default function JoinRoom(props: Props) {
       toast.error("Room not found");
       return;
     }
-    setRoomData({ roomId: querySnapshot.docs[0].data().roomId, roomName: querySnapshot.docs[0].data().roomName });
+    setRoomData({ roomId: querySnapshot.docs[0].data().roomId, roomName: querySnapshot.docs[0].data().roomName, isDevelop: querySnapshot.docs[0].data().isDevelop });
     if (!querySnapshot.docs[0].data().password) {
       setRoomPassword(querySnapshot.docs[0].data().password);
-      setRoomDataStore({ roomId: roomData.roomId, roomName: roomData.roomName });
+      setRoomDataStore({ roomId: roomData.roomId, roomName: roomData.roomName, isDevelop: roomData.isDevelop });
       setFindRoomStatus("found");
     } else {
       setRoomPassword(querySnapshot.docs[0].data().password);

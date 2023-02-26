@@ -5,11 +5,21 @@ import { MessageInterface } from "./../interfaces/message";
 import axios from "axios";
 import { OgInterface } from "../interfaces/og";
 import { Link } from "react-router-dom";
+import { roomDataAtom } from "../stores/roomDataStore";
+import { useRecoilState } from "recoil";
+import DOMPurify from "dompurify";
+
 const Message = (message: MessageInterface) => {
   const { userData: session } = useSession();
+  const [roomDataStore, setRoomDataStore] = useRecoilState(roomDataAtom);
+
+  const [_message, setMessage] = useState<string>(message.text);
+
   const [isUrl, setIsUrl] = useState(false);
   const [url, setUrl] = useState<string>("");
   const [urlData, setUrlData] = useState<OgInterface | null>(null);
+
+  const [isImage, setIsImage] = useState(false);
   const ShowDate = (props: {}) => {
     if (!message.displayDate) return <></>;
     const date = message.displayDate.split(" ");
@@ -29,22 +39,55 @@ const Message = (message: MessageInterface) => {
     const regex = /(https?:\/\/[^\s]+)/g;
     const text = message.text;
     const match = text.match(regex);
-    if (match) {
+    if (!match) return;
+    const isImage = await axios.get(`https://corsproxy.io/?${match[0]}`);
+
+    if (isImage.headers["content-type"].includes("image")) {
+      const sanitizedHtml = DOMPurify.sanitize(
+        message.text.replace(match[0], `<img style="margin: 5px 0 5px;" class="text-primary hover:underline" src="${match[0]}" />`),
+        {
+          ALLOWED_TAGS: ["img"],
+        }
+      );
+      setMessage(sanitizedHtml);
+      setUrl(match[0]);
+      setIsImage(true);
+    } else {
+      const sanitizedHtml = DOMPurify.sanitize(
+        message.text.replace(
+          match[0],
+          `<a style="margin: 0px 2px;" class="text-primary hover:underline" href="${match[0]}" target="_blank" >${match[0]}</a>`
+        ),
+        {
+          ALLOWED_TAGS: ["a"],
+        }
+      );
+      setMessage(sanitizedHtml);
       setIsUrl(true);
       setUrl(match[0]);
-      const resp = await axios.post("https://x-chat-backend.vercel.app/checkIsUrl", {
-        url: match[0],
-      });
+      const resp = await axios.post(
+        "https://x-chat-backend.vercel.app/checkIsUrl",
+        {
+          url: match[0],
+        }
+      );
       setUrlData(resp.data);
     }
   };
 
   useEffect(() => {
     checkUrl();
+    if(!roomDataStore.isDevelop){
+      const sanitizedHtml = DOMPurify.sanitize(message.text, {
+        ALLOWED_TAGS: [],
+      });
+      setMessage(sanitizedHtml);
+    }
   }, []);
 
   return (
     <>
+    <div className="text-primary hover:underline hidden" ></div>
       <div
         className={`flex w-full gap-2 ${
           message.uid === session?.uid
@@ -69,11 +112,19 @@ const Message = (message: MessageInterface) => {
           ) : (
             <div className="px-1 py-3 "></div>
           )}
-          <div className="block p-2 bg-base-content  rounded-lg">
-            <p className="text-base-100 flex break-all justify-center">
-              {message.text}
-            </p>
+          <div className="block p-2 bg-base-content rounded-lg">
+            <p
+              className="text-base-100 flex break-all justify-center"
+              dangerouslySetInnerHTML={{ __html: _message }}
+            />
           </div>
+          {/* {isImage && url ? (
+            <div className=" p-2 mt-2  w-[100%] ">
+              <div className="flex flex-col text-base-100 break-all justify-center items-center p-2">
+                <img alt={`null`} src={url} />
+              </div>
+            </div>
+          ) : null} */}
           {isUrl && urlData && url ? (
             <Link to={url} target="_blank">
               <div className="block p-2 bg-base-content  rounded-lg mt-2">
@@ -110,29 +161,6 @@ const Message = (message: MessageInterface) => {
           ) : null}
         </div>
       </div>
-      {/* <div
-        className={`flex w-full  ${
-          message.uid === session?.uid ? "justify-end" : "justify-start"
-        }`}
-      >
-        <div className="flex-wrap max-w-[50%] ">
-          <p
-            className={`px-1 py-1 ${
-              message.uid === session?.uid ? "text-right " : "text-left"
-            }`}
-          >
-            {message.displayName}
-          </p>
-          <div className="block p-3 bg-base-content  rounded-lg">
-            <p className="text-base-100 flex break-all justify-center">
-              {message.text}
-            </p>
-          </div>
-        </div>
-      </div>
-      <span className="text-[12px]">
-        <ShowDate />
-      </span> */}
     </>
   );
 };

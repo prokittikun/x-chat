@@ -8,6 +8,7 @@ const roomDataAtom = atom<RoomIdInterface>({
   default: {
     roomId: "",
     roomName: "",
+    isDevelop: false,
   },
 });
 

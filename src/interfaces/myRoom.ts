@@ -6,6 +6,7 @@ export interface MyRoomInterface {
   createdAt: MyRoomCreatedAt;
   host: string;
   id: string;
+  isDevelop: boolean;
 }
 
 export interface MyRoomCreatedAt {

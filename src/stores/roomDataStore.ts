@@ -3,11 +3,12 @@ import { RoomIdInterface } from "../interfaces/roomId";
 
 
 
-const roomIdAtom = atom<RoomIdInterface>({
+const roomDataAtom = atom<RoomIdInterface>({
   key: "roomIdKey",
   default: {
     roomId: "",
+    roomName: "",
   },
 });
 
-export { roomIdAtom };
+export { roomDataAtom };

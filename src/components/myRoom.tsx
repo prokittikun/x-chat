@@ -8,7 +8,7 @@ import "../css/myRoom.css";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { toast } from "react-hot-toast";
-import { collection, deleteDoc, doc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { fireStore } from "../configs/firebase";
 import { Box, Modal } from "@mui/material";
 import { useRef, useState } from "react";
@@ -54,10 +54,16 @@ export default function MyRoom(props: Props) {
     roomId: string
   ) => {
     e.preventDefault();
-    const roomCollection = collection(fireStore, "rooms");
     toast.success("Room deleted!");
     handleClose();
-    await deleteDoc(doc(roomCollection, roomId));
+    const roomCollection = collection(fireStore, "rooms");
+    const roomRef = doc(roomCollection, roomId);
+    const message = collection(roomRef, "messages");
+    const query = await getDocs(message);
+    query.forEach((doc) => {
+      deleteDoc(doc.ref);
+    });
+    await deleteDoc(roomRef);
   };
   const handleClickOutside = () => {
     handleClose();
@@ -87,7 +93,7 @@ export default function MyRoom(props: Props) {
                     )}
                     type="button"
                     onClick={() =>
-                      goToRoomChat({ roomId: x.roomId, roomName: x.roomName })
+                      goToRoomChat({ roomId: x.roomId, roomName: x.roomName, isDevelop: x.isDevelop })
                     }
                     value={x.roomName}
                   />

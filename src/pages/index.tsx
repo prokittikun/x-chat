@@ -6,7 +6,7 @@ import SendMessage from "./../components/sendMessage";
 import CreatedRoom from "./../components/createdRoom";
 import MyRoom from "../components/myRoom";
 import { useRecoilState } from "recoil";
-import { roomIdAtom } from "../stores/roomIdStore";
+import { roomDataAtom } from "../stores/roomDataStore";
 import { MyRoomInterface } from "../interfaces/myRoom";
 import useSession from "../hooks/useSession";
 import {
@@ -22,7 +22,7 @@ import { fireStore } from "../configs/firebase";
 
 export default function Index() {
   const scroll = useRef<HTMLSpanElement>(null);
-  const [roomIdStore, setRoomIdStore] = useRecoilState(roomIdAtom);
+  const [roomDataStore, setRoomDataStore] = useRecoilState(roomDataAtom);
   const [findRoomCreatedStatus, setFindRoomCreatedStatus] = useState<
     "notFound" | "loading" | "found"
   >("notFound");
@@ -35,7 +35,11 @@ export default function Index() {
         setFindRoomCreatedStatus("loading");
       }
       const roomsRef = collection(fireStore, "rooms");
-      const q = query(roomsRef, where("host", "==", userData?.uid), orderBy("createdAt", "asc"));
+      const q = query(
+        roomsRef,
+        where("host", "==", userData?.uid),
+        orderBy("createdAt", "asc")
+      );
       const querySnapshot = await getDocs(q);
       if (querySnapshot.size === 0) {
         setFindRoomCreatedStatus("notFound");
@@ -71,8 +75,11 @@ export default function Index() {
           <div className="flex-col items-center justify-center mx-auto w-[50rem] max-w-[50rem]">
             <JoinRoom>
               <div className="bg-secondary-focus flex flex-col h-full max-h-[75vh] rounded-xl max-w-[50rem] w-full my-3 mt-3 px-5 gap-5 py-3">
+                <div className="flex justify-center items-center">
+                  <span className="badge text-[16px]">{roomDataStore.roomName}</span>
+                </div>
                 <ChatBox />
-                <SendMessage scroll={scroll} />
+                <SendMessage />
               </div>
             </JoinRoom>
           </div>

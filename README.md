@@ -1,6 +1,6 @@
 # X-CHAT
 
-Try this [x-chat]([https://x-chat-gamma.vercel.app/]).
+Try this [x-chat] https://x-chat-gamma.vercel.app/.
 
 ## Available Scripts
 

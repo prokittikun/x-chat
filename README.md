@@ -1,6 +1,6 @@
 # X-CHAT
 
-Try this [x-chat]([https://github.com/facebook/create-react-app](https://x-chat-gamma.vercel.app/)).
+Try this [x-chat]([[https://github.com/facebook/create-react-app](https://x-chat-gamma.vercel.app/)](https://x-chat-gamma.vercel.app/)).
 
 ## Available Scripts
 
